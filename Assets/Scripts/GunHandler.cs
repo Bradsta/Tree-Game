@@ -33,6 +33,7 @@ public class GunHandler : MonoBehaviour {
         else if (Input.GetKey(KeyCode.RightArrow) && (transform.eulerAngles.y > (maxLeftRotation - 1) || transform.eulerAngles.y < maxRightRotation))
             transform.Rotate(Vector3.up * rotationPerSecond * Time.deltaTime);
 
+
         if (Input.GetKey(KeyCode.Space) && lastShot >= shotDelay) {
             GameObject clonedBullet = (GameObject) Instantiate(bullet, bulletExit.position, transform.rotation);
 
