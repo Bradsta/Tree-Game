@@ -18,8 +18,9 @@ public class EnemyScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (moving)
+        if (moving) {
             this.transform.Translate(translation * Time.deltaTime);
+        }
 	}
 
     void OnCollisionEnter (Collision col) {
@@ -28,8 +29,8 @@ public class EnemyScript : MonoBehaviour {
                 moving = false;
                 this.enemyAnimation.CrossFade("Lumbering");
             }
-            //Destroy(col.gameObject);
-            //Destroy(this.gameObject);
+        } else if (col.gameObject.CompareTag("Bullet")) {
+            Destroy(col.gameObject);
         }
     }
 

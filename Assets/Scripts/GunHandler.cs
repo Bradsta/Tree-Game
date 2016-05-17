@@ -36,11 +36,11 @@ public class GunHandler : MonoBehaviour {
 
         if (Input.GetKey(KeyCode.Space) && lastShot >= shotDelay) {
             GameObject clonedBullet = (GameObject) Instantiate(bullet, bulletExit.position, transform.rotation);
-
             Vector3 forceVector = Quaternion.Euler(0, transform.eulerAngles.y, 0) * Vector3.forward;
-
             clonedBullet.GetComponent<Rigidbody>().AddForce(forceVector * 950);
             lastShot = 0f;
+
+            Destroy(clonedBullet, 3.0f);
         }
     }
     
