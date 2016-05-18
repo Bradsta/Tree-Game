@@ -4,22 +4,31 @@ using System.Collections;
 public class EnemyScript : MonoBehaviour {
 
     public float speed = 3;    //In units per second. Varies from each lumberjack.
-    public int damage  = 10;   //This applies every time a lumberjack hits a tree. Varies from each lumberjack.
-    public int hp      = 100;  //Healthpoints. Varies from each lumberjack.
+    public float damage  = 10;   //This applies every time a lumberjack hits a tree. Varies from each lumberjack.
+    public float hp      = 100;  //Healthpoints. Varies from each lumberjack.
 
     private Vector3 translation;
     private Animation enemyAnimation;
+
     private bool moving = true;
 
+    private bool applyDamage = false; //When true, the GameController will apply damage to the tree.
+    private float lastDamage = 0f;
+
     void Start () {
-        this.translation = new Vector3(0, 0, this.speed);
-        this.enemyAnimation = GetComponent<Animation>();
+        translation = new Vector3(0, 0, this.speed);
+        enemyAnimation = GetComponent<Animation>();
     }
 	
-	// Update is called once per frame
 	void Update () {
         if (moving) {
             this.transform.Translate(translation * Time.deltaTime);
+        } else { //We are hitting the tree
+            lastDamage += Time.deltaTime;
+
+            if (lastDamage >= 1f && !applyDamage) { //Apply damage every second
+                applyDamage = true; //Damage can now be applied to the tree.
+            }
         }
 	}
 
@@ -27,11 +36,29 @@ public class EnemyScript : MonoBehaviour {
         if (col.gameObject.CompareTag("Tree")) {
             if (moving) {
                 moving = false;
-                this.enemyAnimation.CrossFade("Lumbering");
+                lastDamage = 0f; //Reset damage timer
+                enemyAnimation.CrossFade("Lumbering");
             }
         } else if (col.gameObject.CompareTag("Bullet")) {
+            BulletScript bs = col.gameObject.GetComponent<BulletScript>();
+
+            hp -= bs.damage; //Take damage from the bullet.
+
             Destroy(col.gameObject);
+
+            if (hp <= 0) { //Lumberjack has no more hp.
+                Destroy(this.gameObject);
+            }
         }
+    }
+
+    public bool CanApplyDamage() {
+        return applyDamage;
+    }
+
+    public void ResetDamageTimer() {
+        lastDamage = 0f;
+        applyDamage = false;
     }
 
 }
