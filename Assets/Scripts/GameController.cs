@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
@@ -8,8 +9,14 @@ public class GameController : MonoBehaviour {
     public GameObject giantLumberjack;  //Giant lumberjack, slow walk
     public GameObject smallLumberjack;  //Small lumberjack, quick walk
 
+    public Text treeHpText;
+    public Text waveText;
+    public Text enemiesLeftText;
+
     private int waveNumber = 1;  //Starting on first wave
-    private float treeHp = 1000;   //Tree must survive all waves with 1000 starting hp
+
+    private const float maxTreeHp = 1000; //Tree must survive all waves with 1000 starting hp
+    private float treeHp = 1000;
 
     private List<EnemyScript> lumberjacks = new List<EnemyScript>();
 
@@ -33,11 +40,14 @@ public class GameController : MonoBehaviour {
             }
         }
 
-        Debug.Log(treeHp);
+        int treeHpPercent = (int) ((treeHp / maxTreeHp) * 100.0f);
+        treeHpText.text = treeHpPercent + "%";
     }
 
     void SpawnLumberjacks() {
         lumberjacks.Add(((GameObject) Instantiate(smallLumberjack, leftSpawnPoint, leftSpawnRotation)).GetComponent<EnemyScript>());
+        lumberjacks.Add(((GameObject)Instantiate(normalLumberjack, leftSpawnPoint, leftSpawnRotation)).GetComponent<EnemyScript>());
+        lumberjacks.Add(((GameObject)Instantiate(giantLumberjack, rightSpawnPoint, rightSpawnRotation)).GetComponent<EnemyScript>());
     }
 
 }

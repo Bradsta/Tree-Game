@@ -42,7 +42,10 @@ public class EnemyScript : MonoBehaviour {
         } else if (col.gameObject.CompareTag("Bullet")) {
             BulletScript bs = col.gameObject.GetComponent<BulletScript>();
 
-            hp -= bs.damage; //Take damage from the bullet.
+            if (!bs.hit) {
+                hp -= bs.damage; //Take damage from the bullet.
+                bs.hit = true;
+            }
 
             Destroy(col.gameObject);
 
