@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GunHandler : MonoBehaviour {
@@ -6,8 +7,12 @@ public class GunHandler : MonoBehaviour {
     public GameObject bullet;    //Bullet objects being sent
     public Transform bulletExit; //Exit location of the bullet, attached to the tip of the gun.
     public float bulletSpeed = 2000f;
+    public float shotsPerSecond = 1f;
 
-    private float rotationPerSecond        = 30f;
+    public Image crosshair;
+    public Transform crosshairLocation;
+
+    private float rotationPerSecond        = 45f;
     private float horizonalRotationalDepth = 50f;
     private float verticalRotationalDepth  = 20f;
     private float maxLeftRotation  = 360;
@@ -16,7 +21,6 @@ public class GunHandler : MonoBehaviour {
     private float maxDownRotation  = 0;
     private const float give = 10f; //May extends up to 10 degrees too much but that's it.
 
-    public float shotsPerSecond = 1f;
     private float shotDelay;
     private float lastShot; //Time since last shot
 
@@ -30,8 +34,10 @@ public class GunHandler : MonoBehaviour {
     }
 	
 	void Update () {
-        lastShot += Time.deltaTime;
+        crosshair.transform.position = Camera.main.WorldToScreenPoint(crosshairLocation.transform.position); //Put crosshair in the correct spot.
 
+        lastShot += Time.deltaTime;
+        
         //+1 is added so that rotation in the opposite direction is not locked.
         if (Input.GetKey(KeyCode.LeftArrow) && (transform.eulerAngles.y > maxLeftRotation || transform.eulerAngles.y < (maxRightRotation + give)))
             transform.Rotate(-Vector3.up * rotationPerSecond * Time.deltaTime);
@@ -50,7 +56,7 @@ public class GunHandler : MonoBehaviour {
             clonedBullet.GetComponent<Rigidbody>().AddForce(forceVector * bulletSpeed);
             lastShot = 0f;
 
-            Destroy(clonedBullet, 3.0f);
+            Destroy(clonedBullet, 3f);
         }
     }
     

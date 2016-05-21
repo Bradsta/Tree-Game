@@ -33,7 +33,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void Update () {
-	    foreach(EnemyScript es in lumberjacks) {
+	    foreach (EnemyScript es in lumberjacks) {
             if (es.CanApplyDamage()) {
                 treeHp -= es.damage;
                 es.ResetDamageTimer();
