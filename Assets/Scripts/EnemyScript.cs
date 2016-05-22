@@ -7,6 +7,8 @@ public class EnemyScript : MonoBehaviour {
     public float damage  = 10;   //This applies every time a lumberjack hits a tree. Varies from each lumberjack.
     public float hp      = 100;  //Healthpoints. Varies from each lumberjack.
 
+    public bool dead = false; //Will be deleted from GameController if true.
+
     private Vector3 translation;
     private Animation enemyAnimation;
 
@@ -51,6 +53,7 @@ public class EnemyScript : MonoBehaviour {
 
             if (hp <= 0) { //Lumberjack has no more hp.
                 Destroy(this.gameObject);
+                dead = true;
             }
         }
     }

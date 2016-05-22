@@ -13,12 +13,15 @@ public class GameController : MonoBehaviour {
     public Text waveText;
     public Text enemiesLeftText;
 
-    private int waveNumber = 1;  //Starting on first wave
+    private int waveNumber = 0;
+    private float waveTimer = 0;
+    private int lastSpawn = 2;
 
     private const float maxTreeHp = 1000; //Tree must survive all waves with 1000 starting hp
     private float treeHp = 1000;
 
-    private List<EnemyScript> lumberjacks = new List<EnemyScript>();
+    private List<EnemyScript> activeLumberjacks = new List<EnemyScript>();
+    private List<GameObject> toSpawn = new List<GameObject>();
 
     //Use these locations/rotations if lumberjack is to be spawned on left side of screen.
     private Vector3 leftSpawnPoint = new Vector3(-25f, 0f, 0f);
@@ -28,26 +31,91 @@ public class GameController : MonoBehaviour {
     private Vector3 rightSpawnPoint = new Vector3(25f, 0f, 0f);
     private Quaternion rightSpawnRotation = Quaternion.Euler(0, 270, 0);
 
+    private Color blueSkyColor = new Color(75 / 255f, 151 / 255f, 204 / 255f);
+    private Color brownSkyColor = new Color(83 / 255f, 64 / 255f, 50 / 255f);
+
     void Start () {
-        SpawnLumberjacks();
+        treeHp = maxTreeHp;
+        waveNumber = 0;
 	}
 	
 	void Update () {
-	    foreach (EnemyScript es in lumberjacks) {
-            if (es.CanApplyDamage()) {
+        waveTimer += Time.deltaTime; //Adds to total time in the wave
+
+        for (int i=0; i<activeLumberjacks.Count; i++) {
+            EnemyScript es = activeLumberjacks[i];
+
+            if (es.dead) {
+                activeLumberjacks.RemoveAt(i);
+                i--;
+            } else if (es.CanApplyDamage()) {
                 treeHp -= es.damage;
                 es.ResetDamageTimer();
             }
         }
 
-        int treeHpPercent = (int) ((treeHp / maxTreeHp) * 100.0f);
-        treeHpText.text = treeHpPercent + "%";
+        float treeHpPercent = treeHp / maxTreeHp;
+        float remainingPercent = 1 - treeHpPercent;
+        treeHpText.text = ((int) (treeHpPercent * 100)) + "%";
+        RenderSettings.fogDensity = 0.1f * remainingPercent;
+        Color skyColor = new Color(blueSkyColor.r + ((brownSkyColor.r - blueSkyColor.r) * remainingPercent),
+            blueSkyColor.g + ((brownSkyColor.g - blueSkyColor.g) * remainingPercent),
+            blueSkyColor.b + ((brownSkyColor.b - blueSkyColor.b) * remainingPercent));
+        Camera.main.backgroundColor = skyColor;
+
+        if (treeHp <= 0) {
+            //You lost the game ;(
+        } else if (activeLumberjacks.Count == 0 && toSpawn.Count == 0) {
+            if (waveNumber == 10) {
+                //You won! :D
+            } else {
+                //Need to spawn another wave
+                PopulateWave(++waveNumber);
+            }
+        }
+
+        if (toSpawn.Count > 0 && (int) waveTimer > lastSpawn) {
+            lastSpawn = (int) waveTimer;
+            SpawnLumberjack();
+        }
+
+        enemiesLeftText.text = (activeLumberjacks.Count + toSpawn.Count).ToString();
     }
 
-    void SpawnLumberjacks() {
-        lumberjacks.Add(((GameObject) Instantiate(smallLumberjack, leftSpawnPoint, leftSpawnRotation)).GetComponent<EnemyScript>());
-        lumberjacks.Add(((GameObject)Instantiate(normalLumberjack, leftSpawnPoint, leftSpawnRotation)).GetComponent<EnemyScript>());
-        lumberjacks.Add(((GameObject)Instantiate(giantLumberjack, rightSpawnPoint, rightSpawnRotation)).GetComponent<EnemyScript>());
+    private void PopulateWave(int waveNumber) {
+        waveText.text = waveNumber.ToString();
+        enemiesLeftText.text = waveNumber.ToString();
+
+        if (waveNumber >= 1) toSpawn.Add(normalLumberjack);
+        if (waveNumber >= 2) toSpawn.Add(smallLumberjack);
+        if (waveNumber >= 3) toSpawn.Add(giantLumberjack);
+
+        //Each wave >= 3 should have 1 of each lumberjack, the rest will be randomly generated.
+
+        for (int i=toSpawn.Count; i < waveNumber; i++) {
+            int numb = Random.Range(1, 11);
+
+            if (numb <= 4) toSpawn.Add(normalLumberjack); //1-4 = 40%
+            else if (numb <= 8) toSpawn.Add(smallLumberjack); //5-8 = 40%
+            else if (numb <= 10) toSpawn.Add(giantLumberjack); //8-10 = 20%
+        }
+
+        //Wave should be populated now.
+        waveTimer = 0;
+        lastSpawn = 2;
+    }
+
+    private void SpawnLumberjack() {
+        GameObject lumberjack = toSpawn[0];
+
+        int random = Random.Range(1, 3);
+
+        //50% chance enemy gets spawned on left, 50% chance enemy gets spawned on right
+        if (random == 1) lumberjack = (GameObject) Instantiate(lumberjack, leftSpawnPoint, leftSpawnRotation);
+        else lumberjack = (GameObject) Instantiate(lumberjack, rightSpawnPoint, rightSpawnRotation);
+
+        activeLumberjacks.Add(lumberjack.GetComponent<EnemyScript>());
+        toSpawn.RemoveAt(0);
     }
 
 }
