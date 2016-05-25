@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour 
 {
 	public GameObject Menu1, Menu2;
+	public AudioSource soundTrack;
 
 	public void LoadSenceAndKeepCurrentScene(string sceneName)
 	{
@@ -33,6 +35,22 @@ public class MenuManager : MonoBehaviour
 		{
 			Menu2.SetActive (false);
 			Menu1.SetActive (true);
+		}
+	}
+
+	public void ToggleSound(GameObject buttonText)
+	{
+		Text displayString = buttonText.GetComponent<Text> ();
+
+		if (soundTrack.mute)
+		{
+			soundTrack.mute = false;
+			displayString.text = "SOUND ON";
+		} 
+		else 
+		{
+			soundTrack.mute = true;
+			displayString.text = "SOUND OFF";
 		}
 	}
 
