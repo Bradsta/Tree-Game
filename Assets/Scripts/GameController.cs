@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -40,6 +41,14 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void Update () {
+
+		if (Input.GetKey ("escape")) {
+			// exit on escape
+			SceneManager.UnloadScene (SceneManager.GetActiveScene().name);
+			SceneManager.LoadScene ("MainMenu");
+		}
+
+
         waveTimer += Time.deltaTime; //Adds to total time in the wave
 
         for (int i=0; i<activeLumberjacks.Count; i++) {
