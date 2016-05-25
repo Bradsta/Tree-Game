@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour 
 {
-	public GameObject Menu1, Menu2;
+	public GameObject mainMenu, optionsMenu, controlGuide;
 	public AudioSource soundTrack;
 
 	public void LoadSenceAndKeepCurrentScene(string sceneName)
@@ -26,15 +26,15 @@ public class MenuManager : MonoBehaviour
 
 	public void SwitchMenus()
 	{
-		if (Menu1.activeInHierarchy) 
+		if (mainMenu.activeInHierarchy) 
 		{
-			Menu1.SetActive (false);
-			Menu2.SetActive (true);
+			mainMenu.SetActive (false);
+			optionsMenu.SetActive (true);
 		} 
 		else
 		{
-			Menu2.SetActive (false);
-			Menu1.SetActive (true);
+			optionsMenu.SetActive (false);
+			mainMenu.SetActive (true);
 		}
 	}
 
@@ -54,4 +54,18 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 
+
+	public void ToggleViewControlls()
+	{
+		if (controlGuide.activeInHierarchy) 
+		{
+			controlGuide.SetActive (false);
+			optionsMenu.SetActive (true);
+		} 
+		else 
+		{
+			controlGuide.SetActive (true);
+			optionsMenu.SetActive (false);
+		}
+	}
 }
