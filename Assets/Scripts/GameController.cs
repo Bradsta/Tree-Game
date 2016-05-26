@@ -34,6 +34,7 @@ public class GameController : MonoBehaviour {
 
     private Color blueSkyColor = new Color(75 / 255f, 151 / 255f, 204 / 255f);
     private Color brownSkyColor = new Color(83 / 255f, 64 / 255f, 50 / 255f);
+    private Color redSkyColor = new Color(255 / 255f, 64 / 255f, 64 / 255f);
 
     void Start () {
         treeHp = maxTreeHp;
@@ -67,9 +68,9 @@ public class GameController : MonoBehaviour {
         float remainingPercent = 1 - treeHpPercent;
         treeHpText.text = ((int) (treeHpPercent * 100)) + "%";
         RenderSettings.fogDensity = 0.1f * remainingPercent;
-        Color skyColor = new Color(blueSkyColor.r + ((brownSkyColor.r - blueSkyColor.r) * remainingPercent),
-            blueSkyColor.g + ((brownSkyColor.g - blueSkyColor.g) * remainingPercent),
-            blueSkyColor.b + ((brownSkyColor.b - blueSkyColor.b) * remainingPercent));
+        Color skyColor = new Color(blueSkyColor.r + ((redSkyColor.r - blueSkyColor.r) * remainingPercent),
+            blueSkyColor.g + ((redSkyColor.g - blueSkyColor.g) * remainingPercent),
+            blueSkyColor.b + ((redSkyColor.b - blueSkyColor.b) * remainingPercent));
         Camera.main.backgroundColor = skyColor;
 
         if (treeHp <= 0) {
@@ -92,7 +93,7 @@ public class GameController : MonoBehaviour {
     }
 
     private void PopulateWave(int waveNumber) {
-        waveText.text = waveNumber.ToString();
+        waveText.text = waveNumber.ToString() + "/10";
         enemiesLeftText.text = waveNumber.ToString();
 
         if (waveNumber >= 1) toSpawn.Add(normalLumberjack);
