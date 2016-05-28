@@ -6,13 +6,13 @@ public class GunHandler : MonoBehaviour {
 
     public GameObject bullet;    //Bullet objects being sent
     public Transform bulletExit; //Exit location of the bullet, attached to the tip of the gun.
-    public float bulletSpeed = 2000f;
-    public float shotsPerSecond = 1f;
+    public float bulletSpeed = 3000f;
+    public float shotsPerSecond = 1.5f;
 
     public Image crosshair;
     public Transform crosshairLocation;
 
-    private float rotationPerSecond        = 45f;
+    private float rotationPerSecond        = 30f;
     private float horizonalRotationalDepth = 50f;
     private float verticalRotationalDepth  = 20f;
     private float maxLeftRotation  = 360;
