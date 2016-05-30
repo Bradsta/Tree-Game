@@ -11,6 +11,7 @@ public class EnemyScript : MonoBehaviour {
 
     private Vector3 translation;
     private Animation enemyAnimation;
+    private AudioSource whackSound;
 
     private bool moving = true;
 
@@ -20,6 +21,7 @@ public class EnemyScript : MonoBehaviour {
     void Start () {
         translation = new Vector3(0, 0, this.speed);
         enemyAnimation = GetComponent<Animation>();
+        whackSound = GetComponent<AudioSource>();
     }
 	
 	void Update () {
@@ -38,13 +40,14 @@ public class EnemyScript : MonoBehaviour {
         if (col.gameObject.CompareTag("Tree")) {
             if (moving) {
                 moving = false;
-                lastDamage = 0f; //Reset damage timer
+                lastDamage = 0.5f; //Reset damage timer, compensate for cross fade
                 enemyAnimation.CrossFade("Lumbering");
             }
         } else if (col.gameObject.CompareTag("Bullet")) {
             BulletScript bs = col.gameObject.GetComponent<BulletScript>();
 
             if (!bs.hit) {
+                whackSound.Play(); //Hit sound
                 hp -= bs.damage; //Take damage from the bullet.
                 bs.hit = true;
             }
