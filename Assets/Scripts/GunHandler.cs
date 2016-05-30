@@ -24,8 +24,6 @@ public class GunHandler : MonoBehaviour {
     private float shotDelay;
     private float lastShot; //Time since last shot
 
-    private AudioSource shotSound;
-
     void Start() {
         this.maxLeftRotation  -= horizonalRotationalDepth;
         this.maxRightRotation += horizonalRotationalDepth;
@@ -33,8 +31,6 @@ public class GunHandler : MonoBehaviour {
         this.maxDownRotation  += verticalRotationalDepth;
 
         this.shotDelay = 1f / this.shotsPerSecond; //Miliseconds to wait before each shot
-
-        this.shotSound = GetComponent<AudioSource>();
     }
 	
 	void Update () {
@@ -55,7 +51,6 @@ public class GunHandler : MonoBehaviour {
         }
 
         if (Input.GetKey(KeyCode.Space) && lastShot >= shotDelay) {
-            shotSound.Play();
             GameObject clonedBullet = (GameObject) Instantiate(bullet, bulletExit.position, transform.rotation);
             Vector3 forceVector = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0) * Vector3.forward;
             clonedBullet.GetComponent<Rigidbody>().AddForce(forceVector * bulletSpeed);

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -12,8 +13,6 @@ public class GameController : MonoBehaviour {
     public Text treeHpText;
     public Text waveText;
     public Text enemiesLeftText;
-    public GameObject winningPanel;
-    public GameObject losingPanel;
 
     private int waveNumber = 0;
     private float waveTimer = 0;
@@ -37,25 +36,19 @@ public class GameController : MonoBehaviour {
     private Color brownSkyColor = new Color(83 / 255f, 64 / 255f, 50 / 255f);
     private Color redSkyColor = new Color(255 / 255f, 64 / 255f, 64 / 255f);
 
-    private AudioSource chopSound;
-    private AudioSource whackSound;
-
     void Start () {
         treeHp = maxTreeHp;
         waveNumber = 0;
-        winningPanel.SetActive(false);
-        losingPanel.SetActive(false);
-
-        chopSound = GetComponents<AudioSource>()[0];
-        whackSound = GetComponents<AudioSource>()[1];
-    }
+	}
 	
 	void Update () {
+
 		if (Input.GetKey ("escape")) {
 			// exit on escape
 			SceneManager.UnloadScene (SceneManager.GetActiveScene().name);
 			SceneManager.LoadScene ("MainMenu");
 		}
+
 
         waveTimer += Time.deltaTime; //Adds to total time in the wave
 
@@ -63,11 +56,9 @@ public class GameController : MonoBehaviour {
             EnemyScript es = activeLumberjacks[i];
 
             if (es.dead) {
-                whackSound.Play();
                 activeLumberjacks.RemoveAt(i);
                 i--;
             } else if (es.CanApplyDamage()) {
-                chopSound.Play();
                 treeHp -= es.damage;
                 es.ResetDamageTimer();
             }
@@ -84,14 +75,9 @@ public class GameController : MonoBehaviour {
 
         if (treeHp <= 0) {
             //You lost the game ;(
-            DestroyAllLumberjacks();
-            losingPanel.SetActive(true);
-            treeHp = 0;
         } else if (activeLumberjacks.Count == 0 && toSpawn.Count == 0) {
             if (waveNumber == 10) {
                 //You won! :D
-                DestroyAllLumberjacks();
-                winningPanel.SetActive(true);
             } else {
                 //Need to spawn another wave
                 PopulateWave(++waveNumber);
@@ -140,15 +126,6 @@ public class GameController : MonoBehaviour {
 
         activeLumberjacks.Add(lumberjack.GetComponent<EnemyScript>());
         toSpawn.RemoveAt(0);
-    }
-
-    private void DestroyAllLumberjacks()
-    {
-        toSpawn.Clear();
-        foreach (EnemyScript es in activeLumberjacks)
-        {
-            Destroy(es.gameObject);
-        }
     }
 
 }
