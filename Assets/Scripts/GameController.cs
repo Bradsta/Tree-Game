@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
     public Text enemiesLeftText;
     public GameObject winningPanel;
     public GameObject losingPanel;
+    public GameObject controls;
 
     private int waveNumber = 0;
     private float waveTimer = 0;
@@ -99,6 +100,7 @@ public class GameController : MonoBehaviour {
         }
 
         if (toSpawn.Count > 0 && (int) waveTimer > lastSpawn) {
+            controls.SetActive(false);
             lastSpawn = (int) waveTimer;
             SpawnLumberjack();
         }
