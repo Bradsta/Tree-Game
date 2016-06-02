@@ -8,6 +8,11 @@ public class MenuManager : MonoBehaviour
 	public GameObject mainMenu, optionsMenu, controlGuide;
 	public AudioSource soundTrack;
 
+    void Start()
+    {
+        Cursor.visible = true;
+    }
+
 	public void LoadSenceAndKeepCurrentScene(string sceneName)
 	{
 		SceneManager.LoadScene (sceneName);

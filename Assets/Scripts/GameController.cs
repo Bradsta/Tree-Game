@@ -15,6 +15,8 @@ public class GameController : MonoBehaviour {
     public GameObject winningPanel;
     public GameObject losingPanel;
     public GameObject controls;
+    public GameObject storyPanel;
+    private bool started = false;
 
     private int waveNumber = 0;
     private float waveTimer = 0;
@@ -42,70 +44,82 @@ public class GameController : MonoBehaviour {
     private AudioSource whackSound;
 
     void Start () {
+        Cursor.visible = false;
         treeHp = maxTreeHp;
         waveNumber = 0;
         winningPanel.SetActive(false);
         losingPanel.SetActive(false);
+        controls.SetActive(false);
+        storyPanel.SetActive(true);
 
         chopSound = GetComponents<AudioSource>()[0];
         whackSound = GetComponents<AudioSource>()[1];
     }
 	
 	void Update () {
-		if (Input.GetKey ("escape")) {
-			// exit on escape
-			SceneManager.UnloadScene (SceneManager.GetActiveScene().name);
-			SceneManager.LoadScene ("MainMenu");
-		}
-
-        waveTimer += Time.deltaTime; //Adds to total time in the wave
-
-        for (int i=0; i<activeLumberjacks.Count; i++) {
-            EnemyScript es = activeLumberjacks[i];
-
-            if (es.dead) {
-                whackSound.Play();
-                activeLumberjacks.RemoveAt(i);
-                i--;
-            } else if (es.CanApplyDamage()) {
-                chopSound.Play();
-                treeHp -= es.damage;
-                es.ResetDamageTimer();
+        if (started) {
+            if (Input.GetKey("escape")) {
+                // exit on escape
+                SceneManager.UnloadScene(SceneManager.GetActiveScene().name);
+                SceneManager.LoadScene("MainMenu");
             }
-        }
 
-        float treeHpPercent = treeHp / maxTreeHp;
-        float remainingPercent = 1 - treeHpPercent;
-        treeHpText.text = ((int) (treeHpPercent * 100)) + "%";
-        RenderSettings.fogDensity = 0.1f * remainingPercent;
-        Color skyColor = new Color(blueSkyColor.r + ((redSkyColor.r - blueSkyColor.r) * remainingPercent),
-            blueSkyColor.g + ((redSkyColor.g - blueSkyColor.g) * remainingPercent),
-            blueSkyColor.b + ((redSkyColor.b - blueSkyColor.b) * remainingPercent));
-        Camera.main.backgroundColor = skyColor;
+            waveTimer += Time.deltaTime; //Adds to total time in the wave
 
-        if (treeHp <= 0) {
-            //You lost the game ;(
-            DestroyAllLumberjacks();
-            losingPanel.SetActive(true);
-            treeHp = 0;
-        } else if (activeLumberjacks.Count == 0 && toSpawn.Count == 0) {
-            if (waveNumber == 10) {
-                //You won! :D
+            for (int i = 0; i < activeLumberjacks.Count; i++) {
+                EnemyScript es = activeLumberjacks[i];
+
+                if (es.dead) {
+                    whackSound.Play();
+                    activeLumberjacks.RemoveAt(i);
+                    i--;
+                }
+                else if (es.CanApplyDamage()) {
+                    chopSound.Play();
+                    treeHp -= es.damage;
+                    es.ResetDamageTimer();
+                }
+            }
+
+            float treeHpPercent = treeHp / maxTreeHp;
+            float remainingPercent = 1 - treeHpPercent;
+            treeHpText.text = ((int)(treeHpPercent * 100)) + "%";
+            RenderSettings.fogDensity = 0.1f * remainingPercent;
+            Color skyColor = new Color(blueSkyColor.r + ((redSkyColor.r - blueSkyColor.r) * remainingPercent),
+                blueSkyColor.g + ((redSkyColor.g - blueSkyColor.g) * remainingPercent),
+                blueSkyColor.b + ((redSkyColor.b - blueSkyColor.b) * remainingPercent));
+            Camera.main.backgroundColor = skyColor;
+
+            if (treeHp <= 0) {
+                //You lost the game ;(
                 DestroyAllLumberjacks();
-                winningPanel.SetActive(true);
-            } else {
-                //Need to spawn another wave
-                PopulateWave(++waveNumber);
+                losingPanel.SetActive(true);
+                treeHp = 0;
             }
-        }
+            else if (activeLumberjacks.Count == 0 && toSpawn.Count == 0) {
+                if (waveNumber == 10) {
+                    //You won! :D
+                    DestroyAllLumberjacks();
+                    winningPanel.SetActive(true);
+                }
+                else {
+                    //Need to spawn another wave
+                    PopulateWave(++waveNumber);
+                }
+            }
 
-        if (toSpawn.Count > 0 && (int) waveTimer > lastSpawn) {
-            controls.SetActive(false);
-            lastSpawn = (int) waveTimer;
-            SpawnLumberjack();
-        }
+            if (toSpawn.Count > 0 && (int)waveTimer > lastSpawn) {
+                controls.SetActive(false);
+                lastSpawn = (int)waveTimer;
+                SpawnLumberjack();
+            }
 
-        enemiesLeftText.text = (activeLumberjacks.Count + toSpawn.Count).ToString();
+            enemiesLeftText.text = (activeLumberjacks.Count + toSpawn.Count).ToString();
+        } else if (Input.GetKey(KeyCode.Return)) {
+            started = true;
+            storyPanel.SetActive(false);
+            controls.SetActive(true);
+        }
     }
 
     private void PopulateWave(int waveNumber) {
